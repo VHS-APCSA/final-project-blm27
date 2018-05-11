@@ -109,15 +109,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 		Toolkit.getDefaultToolkit().sync();
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub

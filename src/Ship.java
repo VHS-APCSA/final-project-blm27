@@ -6,14 +6,14 @@ public class Ship extends GameObject implements Movable
 	public Ship(int gwidth, int gheight)
 	{
 		super(gwidth, gheight);
-		width = 80;
-	    height = 10;
+		width = 25;
+	    height = width;
 		//position and speed of Ship
 		x = (gameWidth - width) / 2;
 		y = gameHeight - height - 20;
 		dir = Dir.NONE;
 		speed = 5;
-		color = Color.orange;
+		color = Color.blue;
 	}
 	@Override
 	public void move()
