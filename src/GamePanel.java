@@ -2,13 +2,17 @@ import java.awt.Color;
 
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -17,12 +21,20 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 public class GamePanel extends JPanel implements Runnable, MouseListener {
+	
+	public static Image Galaga_Fighter;
+	public static Image stars;
+	public static Image bullet;
+	public static Image heart;
+	public static Image lostHeart;
 	//game width and height
 	private int width;
 	private int height;
 	//the game thread
 	private Thread thread;
 	private Ship ship;
+	private Bullets bullets;
+	private Lives lives;
 	
 	private ArrayList<GameObject> pieces;
 	
@@ -48,26 +60,33 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	private Action fire = new AbstractAction("fire") {
 		@Override
 		public void actionPerformed(ActionEvent ae) {
-//			if(bullet == null)
-//			{
-//				bullet = new Bullet(width, height, ship);
-//				pieces.add(bullet);
-//			}
+				bullets = new Bullets(width, height, ship);
+				pieces.add(bullets);
 		}
 	};
-	
 	
 	
 	public GamePanel(int width, int height) {
 		this.width = width;
 		this.height = height;
 		ship = new Ship(width, height);
+		lives = new Lives(width, height);
 		pieces = new ArrayList<GameObject>();
+		pieces.add(lives);
 		pieces.add(ship);
 		thread = new Thread(this);
 		thread.start();
 		setBackground(Color.black);
 		addMouseListener(this);
+		  try {                
+			  Galaga_Fighter = ImageIO.read(new File("./Galaga_Fighter.png"));
+			  stars = ImageIO.read(new File("./stars.gif"));
+			  bullet = ImageIO.read(new File("./bullet.png"));
+			  heart = ImageIO.read(new File("./heart.png"));
+			  lostHeart = ImageIO.read(new File("./lostHeart.png"));
+	        } catch (IOException e) {
+	            e.getStackTrace();
+	        }
 		gameInit();
 	}
 	private void gameInit()
@@ -95,6 +114,10 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	public void paintComponent(Graphics g) 
 	{
 		super.paintComponent(g);
+		g.drawImage(GamePanel.stars, getX(), getY(), 550,700, null);
+		g.fillRect(getX(), getY(), width, 35);
+		
+		
 		for(GameObject piece : pieces)
 		{
 			if(piece != null)
@@ -107,6 +130,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 			}
 		}
 		Toolkit.getDefaultToolkit().sync();
+		
 	}
 	
 	@Override

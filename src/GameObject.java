@@ -33,5 +33,5 @@ public abstract class GameObject {
     }
     public Color getColor() {
     	return color;
-    }
+	}
 }

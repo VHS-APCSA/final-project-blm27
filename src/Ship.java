@@ -1,4 +1,4 @@
-import java.awt.Color;
+import java.awt.Graphics;
 
 public class Ship extends GameObject implements Movable
 {
@@ -6,14 +6,16 @@ public class Ship extends GameObject implements Movable
 	public Ship(int gwidth, int gheight)
 	{
 		super(gwidth, gheight);
-		width = 25;
-	    height = width;
 		//position and speed of Ship
+
+	
 		x = (gameWidth - width) / 2;
-		y = gameHeight - height - 20;
+		y = gameHeight - height - 95;
 		dir = Dir.NONE;
-		speed = 5;
-		color = Color.blue;
+		speed = 7;
+		gameWidth = gameWidth - 57;
+		
+	
 	}
 	@Override
 	public void move()
@@ -40,5 +42,10 @@ public class Ship extends GameObject implements Movable
 	public void setDir(Dir dir)
 	{
 		this.dir = dir;
+	}
+	@Override
+	public void draw(Graphics g)
+	{
+		g.drawImage(GamePanel.Galaga_Fighter, x, y, 40,50, null);
 	}
 }
