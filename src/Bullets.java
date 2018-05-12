@@ -9,11 +9,13 @@ public class Bullets extends GameObject implements Movable{
 		x = ship.getX() + ship.getWidth() /2 + 12;
 		y = gameHeight - 115;
 	}
+	//moves bullet up
 	@Override
 	public void move()
 	{
 		y -= speed;
 	}
+	//draws bullet with bullet image
 	@Override
 	public void draw(Graphics g)
 	{

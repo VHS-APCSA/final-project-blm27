@@ -1,7 +1,11 @@
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.font.*;
 
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -27,6 +31,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	public static Image bullet;
 	public static Image heart;
 	public static Image lostHeart;
+	public static Font arcadeFont;
 	//game width and height
 	private int width;
 	private int height;
@@ -35,6 +40,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	private Ship ship;
 	private Bullets bullets;
 	private Lives lives;
+	private Score score;
 	
 	private ArrayList<GameObject> pieces;
 	
@@ -59,7 +65,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	};
 	private Action fire = new AbstractAction("fire") {
 		@Override
-		public void actionPerformed(ActionEvent ae) {
+		public void actionPerformed(ActionEvent ae)
+		{
 				bullets = new Bullets(width, height, ship);
 				pieces.add(bullets);
 		}
@@ -71,9 +78,11 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 		this.height = height;
 		ship = new Ship(width, height);
 		lives = new Lives(width, height);
+		score = new Score(width, height);
 		pieces = new ArrayList<GameObject>();
 		pieces.add(lives);
 		pieces.add(ship);
+		pieces.add(score);
 		thread = new Thread(this);
 		thread.start();
 		setBackground(Color.black);
@@ -84,7 +93,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 			  bullet = ImageIO.read(new File("./bullet.png"));
 			  heart = ImageIO.read(new File("./heart.png"));
 			  lostHeart = ImageIO.read(new File("./lostHeart.png"));
-	        } catch (IOException e) {
+			  arcadeFont = Font.createFont(Font.TRUETYPE_FONT, new File("ARCADECLASSIC.ttf"));
+			  arcadeFont = arcadeFont.deriveFont(new Float(35));
+	        } catch (IOException | FontFormatException e) {
 	            e.getStackTrace();
 	        }
 		gameInit();
@@ -109,13 +120,12 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 		im.put(keyStroke, name);
 		am.put(name, action);		
 	}
-	
+	//renders objects on screen
 	@Override
 	public void paintComponent(Graphics g) 
 	{
 		super.paintComponent(g);
 		g.drawImage(GamePanel.stars, getX(), getY(), 550,700, null);
-		g.fillRect(getX(), getY(), width, 35);
 		
 		
 		for(GameObject piece : pieces)
@@ -166,8 +176,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) { 
-				//System.out.println("Thread stopped");
-				//e.printStackTrace();
 				return;
 			}
 			repaint();

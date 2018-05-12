@@ -9,6 +9,7 @@ public class Lives extends GameObject implements Counter{
 		x = gameWidth - 50;
 		y = 50;
 	}
+	//decreases lives when called.
 	@Override
 	public void count()
 	{
@@ -18,6 +19,7 @@ public class Lives extends GameObject implements Counter{
 	{
 		return lives;
 	}
+	//draws heart - if 3 lives: 3 hearts, 2 lives: 2 hearts + 1 lostHeart, 1 live: 1 heart + 2 lostHearts.
 	@Override
 	public void draw(Graphics g)
 	{

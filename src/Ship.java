@@ -17,6 +17,7 @@ public class Ship extends GameObject implements Movable
 		
 	
 	}
+	//moves ship left and right
 	@Override
 	public void move()
 	{
@@ -43,6 +44,7 @@ public class Ship extends GameObject implements Movable
 	{
 		this.dir = dir;
 	}
+	//draws ship
 	@Override
 	public void draw(Graphics g)
 	{
