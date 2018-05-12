@@ -6,7 +6,7 @@ public class Bullets extends GameObject implements Movable{
 		super(gameWidth, gameHeight);
 		speed = 4;
 		color = Color.green;
-		x = ship.getX() + ship.getWidth() /2 + 13;
+		x = ship.getX() + ship.getWidth() /2 + 12;
 		y = gameHeight - 115;
 	}
 	@Override
