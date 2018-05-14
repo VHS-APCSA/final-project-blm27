@@ -137,17 +137,14 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 		{
 			if(bullets.intersects(enemy))
 			{
-				int index = 0;
-				while (index < pieces.size())
+				for(int index = 0; index < pieces.size(); index++)
 				{
 					if (pieces.get(index) == enemy || pieces.get(index) == bullets)
 					{
 						score.increaseScore();
-						pieces.remove(enemy);
 						enemy = null;
 						pieces.remove(index);
-					} else {
-						index++;
+						pieces.remove(bullets);
 					}
 				}
 			}

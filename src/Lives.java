@@ -44,7 +44,7 @@ public class Lives extends GameObject implements Counter{
 			g.drawImage(GamePanel.lostHeart, 515, y -40, 30,20, null);
 			g.drawImage(GamePanel.heart, 480, y -40, 30,20, null);
 		}
-		else if(lives ==0)
+		else if(lives == 0)
 		{
 			g.drawImage(GamePanel.lostHeart, gameWidth -50, y -40, 30,20, null);
 			g.drawImage(GamePanel.lostHeart, 515, y -40, 30,20, null);
