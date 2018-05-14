@@ -9,11 +9,13 @@ public class Ship extends GameObject implements Movable
 		//position and speed of Ship
 
 	
-		x = (gameWidth - width) / 2;
+		x = (gameWidth - width) / 2 - 20;
 		y = gameHeight - height - 95;
 		dir = Dir.NONE;
 		speed = 7;
-		gameWidth = gameWidth - 57;
+		gameWidth = gameWidth - 16;
+		width =	40;
+		height = 50;
 		
 	
 	}

@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 public abstract class GameObject {
 	//object x,y position
@@ -21,6 +22,14 @@ public abstract class GameObject {
 	public void draw(Graphics g) {
 		g.setColor(color);
         g.fillRect(x, y, width, height);
+	}
+	public Rectangle getRect() 
+	{
+        return new Rectangle(x, y, width, height);
+    }
+	public boolean intersects(GameObject go) 
+	{
+		 return go.getRect().intersects(this.getRect());
 	}
 	public int getX() {
         return x;

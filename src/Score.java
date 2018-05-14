@@ -25,7 +25,7 @@ public class Score extends GameObject {
 	public void draw(Graphics g)
 	{
 		g.setColor(color);
-		g.setFont(GamePanel.arcadeFont);
+		g.setFont(GamePanel.scoreFont);
 		if(score >= 0 && score < 10)
 		{
 		g.drawString("0000" + score + "", x, y);
