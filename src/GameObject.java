@@ -27,6 +27,7 @@ public abstract class GameObject {
 	{
         return new Rectangle(x, y, width, height);
     }
+	//checks to see if the two rectangle around the objects intersect each other
 	public boolean intersects(GameObject go) 
 	{
 		 return go.getRect().intersects(this.getRect());

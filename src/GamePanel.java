@@ -49,7 +49,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	static Enemy enemy;
 	private Score score;
 	private boolean dead = false;
-	private boolean resume1 = true;
+	private boolean round1Resume = true;
+	private boolean round2Resume = true;
 	private boolean pauseOnce = false;
 	private boolean pauseTwice = false;
 	private int frameCount = 0;
@@ -82,8 +83,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 		@Override
 		public void actionPerformed(ActionEvent ae) 
 		{
-			System.out.println("test1");
-			resume1 = true;
 		}
 	};
 	//fire action which creates new Bullets and adds it to a list. removes bullets when it goes off screen.
@@ -160,7 +159,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 		//space button press
 		registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), "fire", fire);
 
-		registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false), "resume", resume);
 	}
 	private void registerKeyBinding(KeyStroke keyStroke, String name, Action action) {
 		InputMap im = getInputMap(WHEN_IN_FOCUSED_WINDOW);
@@ -211,36 +209,17 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	@Override
 	public void paintComponent(Graphics g) 
 	{
-		if(score.getScore() == 20 && resume1 == true && pauseTwice == false)
-		{
-			g.setColor(Color.red);
-			g.setFont(GamePanel.scoreFont);
-			g.drawString("ROUND 2 COMPLETED", width / 2 - 165, height / 2 - 10);
-			resume1 = false;
-			return;
-		}
-		if(resume1 == false && pauseTwice == false)
-		{
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			pauseTwice = true;
-			resume1 = true;
-			
-		}
-		if(score.getScore() == 5 && resume1 == true && pauseOnce == false)
+		//pauses screen after round 1 is completed
+		if(score.getScore() == 10 && round1Resume == true && pauseOnce == false)
 		{
 			g.setColor(Color.red);
 			g.setFont(GamePanel.scoreFont);
 			g.drawString("ROUND 1 COMPLETED", width / 2 - 165, height / 2 - 10);
-			resume1 = false;
+			round1Resume = false;
 			return;
 			
 		}
-		if(resume1 == false && pauseOnce == false)
+		if(round1Resume == false && pauseOnce == false)
 		{
 			try {
 				Thread.sleep(3000);
@@ -249,54 +228,76 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 				e.printStackTrace();
 			}
 			pauseOnce = true;
-			resume1 = true;
+			round1Resume = true;
+		}
+		//pauses screen after round 2 is completed
+		else if(score.getScore() == 20 && round2Resume == true && pauseTwice == false)
+		{
+			g.setColor(Color.red);
+			g.setFont(GamePanel.scoreFont);
+			g.drawString("ROUND 2 COMPLETED", width / 2 - 165, height / 2 - 10);
+			round2Resume = false;
+			return;
+		}
+		else if(round2Resume == false && pauseTwice == false)
+		{
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			pauseTwice = true;
+			round2Resume = true;
 			
 		}
-		else{
+		else
+		{
 			//after score increases overtime it will start adding different types of enemies.
 			//there is a less chance of spawning a FastEnemy & SmallFastEnemy
-			if(score.getScore() == 6 && resume1 == true)
-			{
-				score.setScore(5);
-			}
 			frameCount++;
-			int scoreRatio = (score.getScore() * -40) + 300;
-			//after the score reaches 8, the difficulty increases
+			int scoreRatio = (score.getScore() * -40) + 400;
+			//ROUND 2(Score higher than 10, less than 20)
 			if (scoreRatio < 5 && scoreRatio > -500)
 			{
 				if (frameCount > SPAWN_SPEED)
 				{
-					int random = (int)(Math.random() *7);
-					if(random <= 5)
+					int random = (int)(Math.random() *8);
+					if(random <= 4)
 					{
 						allEnemies.add(new Enemy(width, height));
 					}
-					else if(random == 6)
+					if(random == 5)
+					{
+						allEnemies.add(new Enemy(width, height));
+						allEnemies.add(new Enemy(width, height));
+					}
+					if(random == 6 || random == 7)
 					{
 						allEnemies.add(new FastEnemy(width,height));
 					}
 					frameCount = 0;
 				}
 			}
-			//if score is 20 or greater, difficulty increases even more.
-			else if(scoreRatio <= -500)
+			//ROUND 3(Score higher than 20)
+			else if(scoreRatio <= -400)
 			{
 				if(frameCount > SPAWN_SPEED)
 				{
 					int random = (int)(Math.random()*9);
-					if(random <=5)
+					if(random <=4)
 					{
 						allEnemies.add(new Enemy(width, height));
 					}
-					else if(random == 6)
+					if(random == 6)
 					{
 						allEnemies.add(new FastEnemy(width, height));
 					}
-					else if(random == 7)
+					if(random == 7 || random == 5)
 					{
 						allEnemies.add(new SmallFastEnemy(width,height));
 					}
-					else if(random == 8)
+					if(random == 8)
 					{
 						allEnemies.add(new Enemy(width, height));
 						allEnemies.add(new Enemy(width, height));
@@ -376,18 +377,15 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 				lives.setLives(3);
 				lives.draw(g);
 			}
+			//if score reaches 10, then full lives are restored
+			if(score.getScore() == 10 && lives.getLives() != 3)
+			{
+				lives.setLives(3);
+				lives.draw(g);
+			}
 			Toolkit.getDefaultToolkit().sync();
 		}
 	}
-
-	//	public void resume()
-	//	{
-	//		if(resume1 = true)
-	//		{
-	//			System.out.println("test");
-	//			thread.resume();
-	//		}
-	//	}
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
