@@ -327,7 +327,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 				}
 			}
 			//		if a enemy goes off the screen, then the life decreases by one. renders the lost heart. if there are no lives
-			//		 then boolean dead is set to true.
+			 //		 then boolean dead is set to true.
 			for (int i = 0; i < allEnemies.size(); i++)
 			{
 				Enemy myE = allEnemies.get(i);
