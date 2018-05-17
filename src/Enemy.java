@@ -1,5 +1,6 @@
 import java.awt.Graphics;
-public class Enemy extends GameObject implements Movable{
+public class Enemy extends GameObject implements Movable
+{
 	public Enemy(int gameWidth, int gameHeight)
 	{
 		super(gameWidth, gameHeight);
@@ -9,13 +10,13 @@ public class Enemy extends GameObject implements Movable{
 		height = 25;
 		width = 30;
 	}
-	//moves bullet up
+	//moves enemy down
 	@Override
 	public void move()
 	{
 		y += speed;
 	}
-	//draws bullet with bullet image
+	//draws enemy with the enemies image
 	@Override
 	public void draw(Graphics g)
 	{

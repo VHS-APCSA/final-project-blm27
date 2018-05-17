@@ -1,7 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Score extends GameObject {
+public class Score extends GameObject implements Counter {
 	private int score;
 	public Score(int gameWidth, int gameHeight) {
 		super(gameWidth, gameHeight);
@@ -11,7 +11,7 @@ public class Score extends GameObject {
 		color = Color.red;
 	}
 	//increases score
-	public void increaseScore()
+	public void count()
 	{
 		score++;
 	}

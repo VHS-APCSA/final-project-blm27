@@ -15,10 +15,12 @@ public class Lives extends GameObject implements Counter{
 	{
 		lives--;
 	}
+	//gets lives
 	public int getLives()
 	{
 		return lives;
 	}
+	//sets lives
 	public void setLives(int lives)
 	{
 		this.lives = lives;

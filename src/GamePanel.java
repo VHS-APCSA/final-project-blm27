@@ -32,6 +32,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	public static Image heart;
 	public static Image enemies;
 	public static Image lostHeart;
+	public static Image fastEnemies;
+	public static Image smallFastEnemies;
 	public static Font scoreFont;
 	public static Font GOFont;
 	public static Image explosion;
@@ -43,11 +45,15 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	private Ship ship;
 	private Bullets bullets = null;
 	private Lives lives;
-	private Enemy enemy;
+	static Enemy enemy;
 	private Score score;
 	private boolean dead = false;
+	private int frameCount = 0;
+	private final int SPAWN_SPEED = 60;
 
 	private ArrayList<GameObject> pieces;
+	private ArrayList<Bullets> allBullets;
+	private ArrayList<Enemy> allEnemies;
 
 
 	private Action left = new AbstractAction("left") {
@@ -68,24 +74,38 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 			ship.setDir(Dir.NONE);
 		}
 	};
+	//fire action which creates new Bullets and adds it to a list. removes bullets when it goes off screen.
 	private Action fire = new AbstractAction("fire") {
 		@Override
 		public void actionPerformed(ActionEvent ae)
 		{
 			bullets = new Bullets(width, height, ship);
-			pieces.add(bullets);
+			allBullets.add(bullets);
+			int index = 0;
+			while (index < allBullets.size())
+			{
+				if (allBullets.get(index).getY() < 0)
+				{
+					allBullets.remove(index);
+				} 
+				else 
+				{
+					index++;
+				}
+			}
 		}
 	};
-
-
 	public GamePanel(int width, int height) {
 		this.width = width;
 		this.height = height;
 		ship = new Ship(width, height);
 		lives = new Lives(width, height);
 		score = new Score(width, height);
-		enemy = new Enemy(width, height);
 		pieces = new ArrayList<GameObject>();
+		allBullets = new ArrayList<Bullets>();
+		allEnemies = new ArrayList<Enemy>();
+
+		allEnemies.add(new Enemy(width, height));
 		pieces.add(lives);
 		pieces.add(ship);
 		pieces.add(score);
@@ -100,6 +120,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 			bullet = ImageIO.read(new File("./bullet.png"));
 			heart = ImageIO.read(new File("./heart.png"));
 			lostHeart = ImageIO.read(new File("./lostHeart.png"));
+			fastEnemies = ImageIO.read(new File("./fastEnemy.png"));
+			smallFastEnemies = ImageIO.read(new File("./SmallFastEnemy.png"));
 			scoreFont = Font.createFont(Font.TRUETYPE_FONT, new File("ARCADECLASSIC.ttf"));
 			GOFont = Font.createFont(Font.TRUETYPE_FONT, new File("ARCADECLASSIC.ttf"));
 			enemies = ImageIO.read(new File("./enemy.png"));
@@ -131,50 +153,87 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 		im.put(keyStroke, name);
 		am.put(name, action);		
 	}
-	private void checkCollision()
+	//	this checkCollision checks to see if a bullet intersects an enemy. if so, it removes 
+	//	both the enemy and bullet from their list.. then increases the score.
+	private void checkCollision(Bullets b)
 	{
-		if(bullets != null && enemy != null)
+		if (b!=null)
 		{
-			if(bullets.intersects(enemy))
+			for (int i = 0; i < allEnemies.size(); i++)
 			{
-				for(int index = 0; index < pieces.size(); index++)
+				if (b.intersects(allEnemies.get(i)))
 				{
-					if (pieces.get(index) == enemy || pieces.get(index) == bullets)
-					{
-						score.increaseScore();
-						enemy = null;
-						pieces.remove(index);
-						pieces.remove(bullets);
-					}
+					allEnemies.remove(i);
+					allBullets.remove(b);
+					score.count();
 				}
 			}
 		}
-		if(ship != null && enemy != null)
+	}
+	//	this checkCollision checks to see if enemy and ship intersect, 
+	//	if so then lives decrease by one. updates the graphics for the hearts.
+	private void checkCollision(Graphics g)
+	{
+		if (ship != null)
 		{
-			if(enemy.intersects(ship))
+			for (int i = 0; i < allEnemies.size(); i++)
 			{
-				int index = 0;
-				while (index < pieces.size())
+				if (ship.intersects(allEnemies.get(i)))
 				{
-					if (pieces.get(index) == enemy || pieces.get(index) == ship)
+					allEnemies.remove(i);
+					lives.setLives(lives.getLives() - 1);
+					lives.draw(g);
+					if (lives.getLives() == 0)
 					{
-						pieces.remove(index);
-						lives.setLives(0);
 						dead = true;
-					} else {
-						index++;
 					}
 				}
 			}
 		}
 	}
-	//renders objects on screen
+	//renders Graphics objects on screen
 	@Override
 	public void paintComponent(Graphics g) 
 	{
+		//after score increases overtime it will start adding different types of enemies.
+		//there is a less chance of spawning a FastEnemy & SmallFastEnemy
+		frameCount++;
+		int scoreRatio = (score.getScore() * -40) + 300;
+		if (scoreRatio < 5)
+		{
+			if (frameCount > SPAWN_SPEED)
+			{
+				int random = (int)(Math.random() *9);
+				if(random <= 5)
+				{
+					allEnemies.add(new Enemy(width, height));
+				}
+				else if(random == 6)
+				{
+					allEnemies.add(new FastEnemy(width,height));
+				}
+				else if(random == 7)
+				{
+					allEnemies.add(new SmallFastEnemy(width,height));
+				}
+				else if(random == 8)
+				{
+					allEnemies.add(new Enemy(width, height));
+					allEnemies.add(new Enemy(width, height));
+				}
+				frameCount = 0;
+			}
+		}
+		//spawns regular enemies until scoreRatio < 5
+		else if (frameCount > scoreRatio)
+		{
+			allEnemies.add(new Enemy(width, height));
+			frameCount = 0;
+		}
 		super.paintComponent(g);
+		//draws background
 		g.drawImage(GamePanel.stars, getX(), getY(), 550,700, null);
-
+		//loops through pieces and draws them
 		for(GameObject piece : pieces)
 		{
 			if(piece != null)
@@ -186,11 +245,44 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 				}
 			}
 		}
-		checkCollision();
+		//		if a enemy goes off the screen, then the life decreases by one. renders the lost heart. if there are no lives
+		//		 then boolean dead is set to true.
+		for (int i = 0; i < allEnemies.size(); i++)
+		{
+			Enemy myE = allEnemies.get(i);
+			if (myE.getY() > height)
+			{
+				allEnemies.remove(i);
+				lives.count();
+				lives.draw(g);
+				if (lives.getLives() == 0)
+				{
+					dead = true;
+				}
+			}
+			myE.draw(g);
+			myE.move();
+		}
+		checkCollision(g);
+		//draws and checks the bullets on the screen
+		for (int i = 0; i < allBullets.size(); i++)
+		{
+			allBullets.get(i).draw(g);
+			checkCollision(allBullets.get(i));
+			if (allBullets.size() > i)
+			{
+				if(allBullets.get(i) instanceof Movable)
+				{
+					((Movable)allBullets.get(i)).move();
+				}
+			}
+		}
+		//if dead is true, then a explosion image is rendered in front of the ship.
 		if(dead)
 		{
 			g.drawImage(GamePanel.explosion, ship.getX() - 17, ship.getY() - 10, 70,70, null);
 		}
+		//if lives are 0, then the text "GAME OVER" is rendered.
 		if(lives.getLives() == 0)
 		{
 			g.setColor(Color.red);
