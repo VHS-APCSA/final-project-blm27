@@ -50,6 +50,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	private Score score;
 	private boolean dead = false;
 	private boolean resume1 = true;
+	private boolean pauseOnce = false;
+	private boolean pauseTwice = false;
 	private int frameCount = 0;
 	private final int SPAWN_SPEED = 60;
 
@@ -209,15 +211,15 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	@Override
 	public void paintComponent(Graphics g) 
 	{
-		if(score.getScore() == 20 && resume1 == true)
+		if(score.getScore() == 20 && resume1 == true && pauseTwice == false)
 		{
 			g.setColor(Color.red);
 			g.setFont(GamePanel.scoreFont);
-			g.drawString("ROUND 1 COMPLETED", width / 2 - 165, height / 2 - 10);
+			g.drawString("ROUND 2 COMPLETED", width / 2 - 165, height / 2 - 10);
 			resume1 = false;
 			return;
 		}
-		if(resume1 == false)
+		if(resume1 == false && pauseTwice == false)
 		{
 			try {
 				Thread.sleep(3000);
@@ -225,14 +227,38 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			pauseTwice = true;
 			resume1 = true;
-			System.out.println("sleeping");
-			score.count();
+			
+		}
+		if(score.getScore() == 5 && resume1 == true && pauseOnce == false)
+		{
+			g.setColor(Color.red);
+			g.setFont(GamePanel.scoreFont);
+			g.drawString("ROUND 1 COMPLETED", width / 2 - 165, height / 2 - 10);
+			resume1 = false;
+			return;
+			
+		}
+		if(resume1 == false && pauseOnce == false)
+		{
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			pauseOnce = true;
+			resume1 = true;
 			
 		}
 		else{
 			//after score increases overtime it will start adding different types of enemies.
 			//there is a less chance of spawning a FastEnemy & SmallFastEnemy
+			if(score.getScore() == 6 && resume1 == true)
+			{
+				score.setScore(5);
+			}
 			frameCount++;
 			int scoreRatio = (score.getScore() * -40) + 300;
 			//after the score reaches 8, the difficulty increases
