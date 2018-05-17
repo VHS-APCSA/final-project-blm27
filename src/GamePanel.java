@@ -36,6 +36,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	public static Image smallFastEnemies;
 	public static Font scoreFont;
 	public static Font GOFont;
+	public static Font roundFont;
 	public static Image explosion;
 	//game width and height
 	private int width;
@@ -48,6 +49,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	static Enemy enemy;
 	private Score score;
 	private boolean dead = false;
+	private boolean resume1 = true;
 	private int frameCount = 0;
 	private final int SPAWN_SPEED = 60;
 
@@ -72,6 +74,14 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 		@Override
 		public void actionPerformed(ActionEvent ae) {
 			ship.setDir(Dir.NONE);
+		}
+	};
+	private Action resume = new AbstractAction("resume") {
+		@Override
+		public void actionPerformed(ActionEvent ae) 
+		{
+			System.out.println("test1");
+			resume1 = true;
 		}
 	};
 	//fire action which creates new Bullets and adds it to a list. removes bullets when it goes off screen.
@@ -127,6 +137,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 			enemies = ImageIO.read(new File("./enemy.png"));
 			explosion = ImageIO.read(new File("./explosion.png"));
 			scoreFont = scoreFont.deriveFont(new Float(35));
+			roundFont = Font.createFont(Font.TRUETYPE_FONT, new File("ARCADECLASSIC.ttf"));
+			roundFont = roundFont.deriveFont(new Float(70));
 			GOFont =  GOFont.deriveFont(new Float(70));
 		} catch (IOException | FontFormatException e) {
 			e.getStackTrace();
@@ -145,6 +157,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 		registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, true), "stop", stop);
 		//space button press
 		registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), "fire", fire);
+
+		registerKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false), "resume", resume);
 	}
 	private void registerKeyBinding(KeyStroke keyStroke, String name, Action action) {
 		InputMap im = getInputMap(WHEN_IN_FOCUSED_WINDOW);
@@ -195,104 +209,159 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 	@Override
 	public void paintComponent(Graphics g) 
 	{
-		//after score increases overtime it will start adding different types of enemies.
-		//there is a less chance of spawning a FastEnemy & SmallFastEnemy
-		frameCount++;
-		int scoreRatio = (score.getScore() * -40) + 300;
-		if (scoreRatio < 5)
-		{
-			if (frameCount > SPAWN_SPEED)
-			{
-				int random = (int)(Math.random() *9);
-				if(random <= 5)
-				{
-					allEnemies.add(new Enemy(width, height));
-				}
-				else if(random == 6)
-				{
-					allEnemies.add(new FastEnemy(width,height));
-				}
-				else if(random == 7)
-				{
-					allEnemies.add(new SmallFastEnemy(width,height));
-				}
-				else if(random == 8)
-				{
-					allEnemies.add(new Enemy(width, height));
-					allEnemies.add(new Enemy(width, height));
-				}
-				frameCount = 0;
-			}
-		}
-		//spawns regular enemies until scoreRatio < 5
-		else if (frameCount > scoreRatio)
-		{
-			allEnemies.add(new Enemy(width, height));
-			frameCount = 0;
-		}
-		super.paintComponent(g);
-		//draws background
-		g.drawImage(GamePanel.stars, getX(), getY(), 550,700, null);
-		//loops through pieces and draws them
-		for(GameObject piece : pieces)
-		{
-			if(piece != null)
-			{
-				piece.draw(g);
-				if(piece instanceof Movable)
-				{
-					((Movable) piece).move();
-				}
-			}
-		}
-		//		if a enemy goes off the screen, then the life decreases by one. renders the lost heart. if there are no lives
-		//		 then boolean dead is set to true.
-		for (int i = 0; i < allEnemies.size(); i++)
-		{
-			Enemy myE = allEnemies.get(i);
-			if (myE.getY() > height)
-			{
-				allEnemies.remove(i);
-				lives.count();
-				lives.draw(g);
-				if (lives.getLives() == 0)
-				{
-					dead = true;
-				}
-			}
-			myE.draw(g);
-			myE.move();
-		}
-		checkCollision(g);
-		//draws and checks the bullets on the screen
-		for (int i = 0; i < allBullets.size(); i++)
-		{
-			allBullets.get(i).draw(g);
-			checkCollision(allBullets.get(i));
-			if (allBullets.size() > i)
-			{
-				if(allBullets.get(i) instanceof Movable)
-				{
-					((Movable)allBullets.get(i)).move();
-				}
-			}
-		}
-		//if dead is true, then a explosion image is rendered in front of the ship.
-		if(dead)
-		{
-			g.drawImage(GamePanel.explosion, ship.getX() - 17, ship.getY() - 10, 70,70, null);
-		}
-		//if lives are 0, then the text "GAME OVER" is rendered.
-		if(lives.getLives() == 0)
+		if(score.getScore() == 20 && resume1 == true)
 		{
 			g.setColor(Color.red);
-			g.setFont(GamePanel.GOFont);
-			g.drawString("GAME OVER", width / 2 - 165, height / 2 - 10);
-			thread.interrupt();
+			g.setFont(GamePanel.scoreFont);
+			g.drawString("ROUND 1 COMPLETED", width / 2 - 165, height / 2 - 10);
+			resume1 = false;
+			return;
 		}
-		Toolkit.getDefaultToolkit().sync();
-
+		if(resume1 == false)
+		{
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			resume1 = true;
+			System.out.println("sleeping");
+			score.count();
+			
+		}
+		else{
+			//after score increases overtime it will start adding different types of enemies.
+			//there is a less chance of spawning a FastEnemy & SmallFastEnemy
+			frameCount++;
+			int scoreRatio = (score.getScore() * -40) + 300;
+			//after the score reaches 8, the difficulty increases
+			if (scoreRatio < 5 && scoreRatio > -500)
+			{
+				if (frameCount > SPAWN_SPEED)
+				{
+					int random = (int)(Math.random() *7);
+					if(random <= 5)
+					{
+						allEnemies.add(new Enemy(width, height));
+					}
+					else if(random == 6)
+					{
+						allEnemies.add(new FastEnemy(width,height));
+					}
+					frameCount = 0;
+				}
+			}
+			//if score is 20 or greater, difficulty increases even more.
+			else if(scoreRatio <= -500)
+			{
+				if(frameCount > SPAWN_SPEED)
+				{
+					int random = (int)(Math.random()*9);
+					if(random <=5)
+					{
+						allEnemies.add(new Enemy(width, height));
+					}
+					else if(random == 6)
+					{
+						allEnemies.add(new FastEnemy(width, height));
+					}
+					else if(random == 7)
+					{
+						allEnemies.add(new SmallFastEnemy(width,height));
+					}
+					else if(random == 8)
+					{
+						allEnemies.add(new Enemy(width, height));
+						allEnemies.add(new Enemy(width, height));
+					}
+					frameCount = 0;
+				}
+			}
+			//spawns regular enemies until scoreRatio < 5
+			else if (frameCount > scoreRatio)
+			{
+				allEnemies.add(new Enemy(width, height));
+				frameCount = 0;
+			}
+			super.paintComponent(g);
+			//draws background
+			g.drawImage(GamePanel.stars, getX(), getY(), 550,700, null);
+			//loops through pieces and draws them
+			for(GameObject piece : pieces)
+			{
+				if(piece != null)
+				{
+					piece.draw(g);
+					if(piece instanceof Movable)
+					{
+						((Movable) piece).move();
+					}
+				}
+			}
+			//		if a enemy goes off the screen, then the life decreases by one. renders the lost heart. if there are no lives
+			//		 then boolean dead is set to true.
+			for (int i = 0; i < allEnemies.size(); i++)
+			{
+				Enemy myE = allEnemies.get(i);
+				if (myE.getY() > height)
+				{
+					allEnemies.remove(i);
+					lives.count();
+					lives.draw(g);
+					if (lives.getLives() == 0)
+					{
+						dead = true;
+					}
+				}
+				myE.draw(g);
+				myE.move();
+			}
+			checkCollision(g);
+			//draws and checks the bullets on the screen
+			for (int i = 0; i < allBullets.size(); i++)
+			{
+				allBullets.get(i).draw(g);
+				checkCollision(allBullets.get(i));
+				if (allBullets.size() > i)
+				{
+					if(allBullets.get(i) instanceof Movable)
+					{
+						((Movable)allBullets.get(i)).move();
+					}
+				}
+			}
+			//if dead is true, then a explosion image is rendered in front of the ship.
+			if(dead)
+			{
+				g.drawImage(GamePanel.explosion, ship.getX() - 17, ship.getY() - 10, 70,70, null);
+			}
+			//if lives are 0, then the text "GAME OVER" is rendered.
+			if(lives.getLives() == 0)
+			{
+				g.setColor(Color.red);
+				g.setFont(GamePanel.GOFont);
+				g.drawString("GAME OVER", width / 2 - 165, height / 2 - 10);
+				thread.interrupt();
+			}
+			//if score reaches 20, then full lives are restored
+			if(score.getScore() == 20 && lives.getLives() != 3)
+			{
+				lives.setLives(3);
+				lives.draw(g);
+			}
+			Toolkit.getDefaultToolkit().sync();
+		}
 	}
+
+	//	public void resume()
+	//	{
+	//		if(resume1 = true)
+	//		{
+	//			System.out.println("test");
+	//			thread.resume();
+	//		}
+	//	}
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {

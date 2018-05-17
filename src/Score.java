@@ -20,6 +20,10 @@ public class Score extends GameObject implements Counter {
 	{
 		return score;
 	}
+	public void setScore(int score)
+	{
+		this.score = score;
+	}
 	//draws score on screen, also adds 0's in front of score.
 	@Override
 	public void draw(Graphics g)
