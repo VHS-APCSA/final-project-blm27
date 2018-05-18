@@ -118,7 +118,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 
 		allEnemies.add(new Enemy(width, height));
 		pieces.add(lives);
-		pieces.add(ship);
+		pieces.add(ship); 
 		pieces.add(score);
 		pieces.add(enemy);
 		thread = new Thread(this);
@@ -132,7 +132,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 			heart = ImageIO.read(new File("./heart.png"));
 			lostHeart = ImageIO.read(new File("./lostHeart.png"));
 			fastEnemies = ImageIO.read(new File("./fastEnemy.png"));
-			smallFastEnemies = ImageIO.read(new File("./SmallFastEnemy.png"));
+			smallFastEnemies = ImageIO.read(new File("./smallfastenemy.png"));
 			enemies = ImageIO.read(new File("./enemy.png"));
 			explosion = ImageIO.read(new File("./explosion.png"));
 			scoreFont = Font.createFont(Font.TRUETYPE_FONT, new File("ARCADECLASSIC.ttf"));
