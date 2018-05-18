@@ -133,10 +133,10 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 			lostHeart = ImageIO.read(new File("./lostHeart.png"));
 			fastEnemies = ImageIO.read(new File("./fastEnemy.png"));
 			smallFastEnemies = ImageIO.read(new File("./SmallFastEnemy.png"));
-			scoreFont = Font.createFont(Font.TRUETYPE_FONT, new File("ARCADECLASSIC.ttf"));
-			GOFont = Font.createFont(Font.TRUETYPE_FONT, new File("ARCADECLASSIC.ttf"));
 			enemies = ImageIO.read(new File("./enemy.png"));
 			explosion = ImageIO.read(new File("./explosion.png"));
+			scoreFont = Font.createFont(Font.TRUETYPE_FONT, new File("ARCADECLASSIC.ttf"));
+			GOFont = Font.createFont(Font.TRUETYPE_FONT, new File("ARCADECLASSIC.ttf"));
 			scoreFont = scoreFont.deriveFont(new Float(35));
 			roundFont = Font.createFont(Font.TRUETYPE_FONT, new File("ARCADECLASSIC.ttf"));
 			roundFont = roundFont.deriveFont(new Float(70));
