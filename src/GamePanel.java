@@ -216,8 +216,17 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 			g.setFont(GamePanel.scoreFont);
 			g.drawString("ROUND 1 COMPLETED", width / 2 - 165, height / 2 - 10);
 			round1Resume = false;
+			int index = 0;
+			while (index < allBullets.size())
+			{
+				allBullets.remove(allBullets.get(index));
+			}
+			int eI = 0;
+			while (eI < allEnemies.size())
+			{
+				allEnemies.remove(allEnemies.get(eI));
+			}
 			return;
-			
 		}
 		if(round1Resume == false && pauseOnce == false)
 		{
@@ -237,6 +246,16 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 			g.setFont(GamePanel.scoreFont);
 			g.drawString("ROUND 2 COMPLETED", width / 2 - 165, height / 2 - 10);
 			round2Resume = false;
+			int index = 0;
+			while (index < allBullets.size())
+			{
+				allBullets.remove(allBullets.get(index));
+			}
+			int eI = 0;
+			while (eI < allEnemies.size())
+			{
+				allEnemies.remove(allEnemies.get(eI));
+			}
 			return;
 		}
 		else if(round2Resume == false && pauseTwice == false)
@@ -249,7 +268,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 			}
 			pauseTwice = true;
 			round2Resume = true;
-			
+
 		}
 		else
 		{
@@ -327,7 +346,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener {
 				}
 			}
 			//		if a enemy goes off the screen, then the life decreases by one. renders the lost heart. if there are no lives
-			 //		 then boolean dead is set to true.
+			//		 then boolean dead is set to true.
 			for (int i = 0; i < allEnemies.size(); i++)
 			{
 				Enemy myE = allEnemies.get(i);
